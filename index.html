@@ -3,163 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM Comparison and Technical Analysis</title>
+    <title>CRM Analysis</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body, html { height:100%; background:#0a0a0a; font-family:"Microsoft JhengHei", Arial, sans-serif; overflow:hidden; color:white; }
-        
-        .container { display:flex; flex-direction:column; height:100vh; }
-        
-        .header {
-            background:#1f1f1f;
-            padding:15px 20px;
-            text-align:center;
-            font-size:20px;
-            box-shadow:0 2px 10px rgba(0,0,0,0.5);
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
         }
         
+        body, html { 
+            height: 100%; 
+            background: #0a0a0a; 
+            overflow: hidden; 
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
         iframe {
-            flex:1;
-            border:none;
-            width:100%;
-            background:#111;
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #111;
         }
-        
-        .controls {
-            background:#1f1f1f;
-            padding:12px 20px;
-            display:flex;
-            flex-wrap:wrap;
-            align-items:center;
-            gap:10px;
-            justify-content:center;
-            box-shadow:0 -2px 10px rgba(0,0,0,0.5);
-        }
-        
-        button {
-            padding:10px 16px;
-            font-size:15px;
-            background:#0066cc;
-            color:white;
-            border:none;
-            border-radius:4px;
-            cursor:pointer;
-        }
-        
-        button:hover { background:#0055aa; }
-        
-        .auto-btn {
-            background:#28a745;
-        }
-        .auto-btn.active {
-            background:#dc3545;
-        }
-        
-        .info {
-            font-size:14px;
-            margin-left:10px;
-            opacity:0.9;
-        }
-        
-        .page-info {
-            margin-left:auto;
-            font-size:14px;
-            opacity:0.85;
+
+        .footer {
+            background: #1f1f1f;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #ccc;
+            flex-shrink: 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            2026 CRM 比較與技術分析報告
-        </div>
-        
+        <!-- PDF 主要區域 -->
         <iframe id="pdfFrame" 
-                src="20260415_CRM_Comparison_and_Technical_Analysis_Andy.pdf" 
-                title="CRM Comparison and Technical Analysis">
+                src="20260415_CRM_Comparison_and_Technical_Analysis_Andy.pdf#page=1" 
+                title="CRM Analysis">
         </iframe>
-        
-        <div class="controls">
-            <button onclick="prevPage()">← 上一頁</button>
-            <button onclick="nextPage()">下一頁 →</button>
-            
-            <button id="autoBtn" class="auto-btn" onclick="toggleAutoPlay()">
-                ▶ 開啟自動翻頁
-            </button>
-            
-            <button onclick="toggleFullscreen()">全螢幕</button>
-            
-            <div class="page-info" id="pageInfo">
-                頁碼載入中...
-            </div>
-            
-            <div class="info">
-                鍵盤 ← → 翻頁｜自動翻頁間隔可調整（目前 8 秒）
-            </div>
+
+        <!-- 底部提示文字 -->
+        <div class="footer">
+            使用鍵盤 ← 上一頁　　→ 下一頁　　｜　按 <strong>F11</strong> 進入全螢幕模式
         </div>
     </div>
 
     <script>
         const iframe = document.getElementById('pdfFrame');
-        const autoBtn = document.getElementById('autoBtn');
-        const pageInfo = document.getElementById('pageInfo');
-        
-        let autoInterval = null;
-        let isAutoPlaying = false;
-        let intervalTime = 8000;   // 預設 8 秒翻一頁（可自行修改）
-
-        // 上一頁
-        function prevPage() {
-            iframe.contentWindow.postMessage({action: "prev"}, "*");
-        }
-
-        // 下一頁
-        function nextPage() {
-            iframe.contentWindow.postMessage({action: "next"}, "*");
-        }
-
-        // 切換自動翻頁
-        function toggleAutoPlay() {
-            isAutoPlaying = !isAutoPlaying;
-            
-            if (isAutoPlaying) {
-                autoBtn.textContent = "⏹ 停止自動翻頁";
-                autoBtn.classList.add('active');
-                autoInterval = setInterval(() => {
-                    nextPage();
-                }, intervalTime);
-            } else {
-                autoBtn.textContent = "▶ 開啟自動翻頁";
-                autoBtn.classList.remove('active');
-                clearInterval(autoInterval);
-            }
-        }
-
-        // 全螢幕
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {
-                    alert("全螢幕啟動失敗，請手動按 F11");
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        }
+        let currentPage = 1;
 
         // 鍵盤控制
         document.addEventListener('keydown', function(e) {
-            if (e.key === "ArrowRight") nextPage();
-            if (e.key === "ArrowLeft") prevPage();
-            if (e.key === " ") {  // 空白鍵切換自動翻頁
-                e.preventDefault();
-                toggleAutoPlay();
+            if (e.key === "ArrowRight") {
+                currentPage++;
+                iframe.src = `20260415_CRM_Comparison_and_Technical_Analysis_Andy.pdf#page=${currentPage}`;
+            } 
+            else if (e.key === "ArrowLeft") {
+                if (currentPage > 1) {
+                    currentPage--;
+                    iframe.src = `20260415_CRM_Comparison_and_Technical_Analysis_Andy.pdf#page=${currentPage}`;
+                }
             }
         });
 
-        // 載入完成提示
+        // 頁面載入完成
         window.addEventListener('load', () => {
-            console.log("PDF 已載入 - 自動翻頁功能已啟用");
-            pageInfo.textContent = "使用 ← → 或按鈕翻頁";
+            console.log("PDF 已載入");
         });
     </script>
 </body>
